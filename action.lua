@@ -12,7 +12,6 @@ local inventory_controller = component.inventory_controller
 local redstone = component.redstone
 local restockAll, cleanUp  -- Forward declaration
 
-
 local function needCharge()
     return computer.energy() / computer.maxEnergy() < config.needChargeLevel
 end
@@ -32,12 +31,25 @@ local function fullInventory()
     return true
 end
 
+local function withSelectedSlot(fn, configTool, checkFullInventory)
+    local selectedSlot = robot.select()
+    if checkFullInventory == true then
+        if fullInventory() then
+            gps.save()
+            dumpInventory()
+            gps.resume()
+        end
+    end
+    if configTool ~= nil then
+        robot.select(robot.inventorySize() + configTool)
+    end
+    fn()
+    robot.select(selectedSlot)
+end
 
 local function restockStick()
-    local selectedSlot = robot.select()
+    withSelectedSlot(function()
     gps.go(config.stickContainerPos)
-    robot.select(robot.inventorySize() + config.stickSlot)
-
     for i=1, inventory_controller.getInventorySize(sides.down) do
         os.sleep(0)
         inventory_controller.suckFromSlot(sides.down, i, 64-robot.count())
@@ -45,13 +57,12 @@ local function restockStick()
             break
         end
     end
-
-    robot.select(selectedSlot)
+    end, config.stickSlot)
 end
 
 
 local function dumpInventory()
-    local selectedSlot = robot.select()
+    withSelectedSlot(function()
     gps.go(config.storagePos)
 
     for i=1, (robot.inventorySize() + config.storageStopSlot) do
@@ -66,12 +77,11 @@ local function dumpInventory()
             end
         end
     end
-
-    robot.select(selectedSlot)
+    end)
 end
 
-
 local function placeCropStick(count)
+    withSelectedSlot(function()
     local selectedSlot = robot.select()
 
     if count == nil then
@@ -92,9 +102,8 @@ local function placeCropStick(count)
     end
 
     inventory_controller.equip()
-    robot.select(selectedSlot)
+    end)
 end
-
 
 local function pulseDown()
     redstone.setOutput(sides.down, 15)
@@ -102,42 +111,29 @@ local function pulseDown()
     redstone.setOutput(sides.down, 0)
 end
 
-
 local function deweed()
-    local selectedSlot = robot.select()
-
-    if fullInventory() then
-        gps.save()
-        dumpInventory()
-        gps.resume()
-    end
-
+    withSelectedSlot(function()
     robot.select(robot.inventorySize() + config.spadeSlot)
     inventory_controller.equip()
     robot.useDown()
     robot.suckDown()
 
     inventory_controller.equip()
-    robot.select(selectedSlot)
+    end, config.spadeSlot, true)
 end
 
 
 local function harvest()
-    if fullInventory() then
-        gps.save()
-        dumpInventory()
-        gps.resume()
-    end
-    
+    withSelectedSlot(function()
     robot.swingDown()
     robot.suckDown()
+    end, nil, true)
 end
 
 
 local function transplant(src, dest)
-    local selectedSlot = robot.select()
+    withSelectedSlot(function()
     gps.save()
-    robot.select(robot.inventorySize() + config.binderSlot)
     inventory_controller.equip()
 
     -- Transfer to relay location
@@ -174,7 +170,7 @@ local function transplant(src, dest)
     robot.suckDown()
 
     gps.resume()
-    robot.select(selectedSlot)
+    end, config.binderSlot)
 end
 
 
@@ -204,8 +200,7 @@ end
 
 
 local function primeBinder()
-    local selectedSlot = robot.select()
-    robot.select(robot.inventorySize() + config.binderSlot)
+    withSelectedSlot(function()
     inventory_controller.equip()
 
     -- Use binder at start to reset it, if already primed
@@ -215,7 +210,7 @@ local function primeBinder()
     robot.useDown(sides.down)
 
     inventory_controller.equip()
-    robot.select(selectedSlot)
+    end, config.binderSlot)
 end
 
 
