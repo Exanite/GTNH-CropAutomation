@@ -49,59 +49,59 @@ end
 
 local function restockStick()
     withSelectedSlot(function()
-    gps.go(config.stickContainerPos)
-    for i=1, inventory_controller.getInventorySize(sides.down) do
-        os.sleep(0)
-        inventory_controller.suckFromSlot(sides.down, i, 64-robot.count())
-        if robot.count() == 64 then
-            break
+        gps.go(config.stickContainerPos)
+        for i=1, inventory_controller.getInventorySize(sides.down) do
+            os.sleep(0)
+            inventory_controller.suckFromSlot(sides.down, i, 64-robot.count())
+            if robot.count() == 64 then
+                break
+            end
         end
-    end
     end, config.stickSlot)
 end
 
 
 local function dumpInventory()
     withSelectedSlot(function()
-    gps.go(config.storagePos)
+        gps.go(config.storagePos)
 
-    for i=1, (robot.inventorySize() + config.storageStopSlot) do
-        os.sleep(0)
-        if robot.count(i) > 0 then
-            robot.select(i)
-            for e=1, inventory_controller.getInventorySize(sides.down) do
-                if inventory_controller.getStackInSlot(sides.down, e) == nil then
-                    inventory_controller.dropIntoSlot(sides.down, e)
-                    break
+        for i=1, (robot.inventorySize() + config.storageStopSlot) do
+            os.sleep(0)
+            if robot.count(i) > 0 then
+                robot.select(i)
+                for e=1, inventory_controller.getInventorySize(sides.down) do
+                    if inventory_controller.getStackInSlot(sides.down, e) == nil then
+                        inventory_controller.dropIntoSlot(sides.down, e)
+                        break
+                    end
                 end
             end
         end
-    end
     end)
 end
 
 local function placeCropStick(count)
     withSelectedSlot(function()
-    local selectedSlot = robot.select()
+        local selectedSlot = robot.select()
 
-    if count == nil then
-        count = 1
-    end
+        if count == nil then
+            count = 1
+        end
 
-    if robot.count(robot.inventorySize() + config.stickSlot) < count + 1 then
-        gps.save()
-        restockStick()
-        gps.resume()
-    end
+        if robot.count(robot.inventorySize() + config.stickSlot) < count + 1 then
+            gps.save()
+            restockStick()
+            gps.resume()
+        end
 
-    robot.select(robot.inventorySize() + config.stickSlot)
-    inventory_controller.equip()
+        robot.select(robot.inventorySize() + config.stickSlot)
+        inventory_controller.equip()
 
-    for _=1, count do
-        robot.useDown()
-    end
+        for _=1, count do
+            robot.useDown()
+        end
 
-    inventory_controller.equip()
+        inventory_controller.equip()
     end)
 end
 
@@ -113,63 +113,63 @@ end
 
 local function deweed()
     withSelectedSlot(function()
-    robot.select(robot.inventorySize() + config.spadeSlot)
-    inventory_controller.equip()
-    robot.useDown()
-    robot.suckDown()
+        robot.select(robot.inventorySize() + config.spadeSlot)
+        inventory_controller.equip()
+        robot.useDown()
+        robot.suckDown()
 
-    inventory_controller.equip()
+        inventory_controller.equip()
     end, config.spadeSlot, true)
 end
 
 
 local function harvest()
     withSelectedSlot(function()
-    robot.swingDown()
-    robot.suckDown()
+        robot.swingDown()
+        robot.suckDown()
     end, nil, true)
 end
 
 
 local function transplant(src, dest)
     withSelectedSlot(function()
-    gps.save()
-    inventory_controller.equip()
+        gps.save()
+        inventory_controller.equip()
 
-    -- Transfer to relay location
-    gps.go(src)
-    robot.useDown(sides.down, true)
-    gps.go(config.dislocatorPos)
-    pulseDown()
+        -- Transfer to relay location
+        gps.go(src)
+        robot.useDown(sides.down, true)
+        gps.go(config.dislocatorPos)
+        pulseDown()
 
-    -- Transfer crop to destination
-    robot.useDown(sides.down, true)
-    gps.go(dest)
+        -- Transfer crop to destination
+        robot.useDown(sides.down, true)
+        gps.go(dest)
 
-    local crop = scanner.scan()
-    if crop.name == 'air' then
-        placeCropStick()
+        local crop = scanner.scan()
+        if crop.name == 'air' then
+            placeCropStick()
 
-    elseif crop.isCrop == false then
-        database.addToStorage(crop)
-        gps.go(gps.storageSlotToPos(database.nextStorageSlot()))
-        placeCropStick()
-    end
+        elseif crop.isCrop == false then
+            database.addToStorage(crop)
+            gps.go(gps.storageSlotToPos(database.nextStorageSlot()))
+            placeCropStick()
+        end
 
-    robot.useDown(sides.down, true)
-    gps.go(config.dislocatorPos)
-    pulseDown()
+        robot.useDown(sides.down, true)
+        gps.go(config.dislocatorPos)
+        pulseDown()
 
-    -- Reprime binder
-    robot.useDown(sides.down, true)
+        -- Reprime binder
+        robot.useDown(sides.down, true)
 
-    -- Destroy original crop
-    inventory_controller.equip()
-    gps.go(config.relayFarmlandPos)
-    robot.swingDown()
-    robot.suckDown()
+        -- Destroy original crop
+        inventory_controller.equip()
+        gps.go(config.relayFarmlandPos)
+        robot.swingDown()
+        robot.suckDown()
 
-    gps.resume()
+        gps.resume()
     end, config.binderSlot)
 end
 
@@ -201,15 +201,15 @@ end
 
 local function primeBinder()
     withSelectedSlot(function()
-    inventory_controller.equip()
+        inventory_controller.equip()
 
-    -- Use binder at start to reset it, if already primed
-    robot.useDown(sides.down, true)
+        -- Use binder at start to reset it, if already primed
+        robot.useDown(sides.down, true)
 
-    gps.go(config.dislocatorPos)
-    robot.useDown(sides.down)
+        gps.go(config.dislocatorPos)
+        robot.useDown(sides.down)
 
-    inventory_controller.equip()
+        inventory_controller.equip()
     end, config.binderSlot)
 end
 
@@ -229,6 +229,15 @@ local function charge()
     until fullyCharged()
 end
 
+local function clearDown()
+    withSelectedSlot(function()
+        inventory_controller.equip()
+        robot.useDown()
+        robot.swingDown()
+        robot.suckDown()
+        inventory_controller.equip()
+    end, config.spadeSlot, true)
+end
 
 function restockAll()
     dumpInventory()
@@ -259,5 +268,6 @@ return {
     harvest = harvest,
     transplant = transplant,
     cleanUp = cleanUp,
-    initWork = initWork
+    initWork = initWork,
+    clearDown = clearDown
 }

@@ -4,6 +4,7 @@ local gps = require('gps')
 local scanner = require('scanner')
 local config = require('config')
 local events = require('events')
+local storage = require('storage')
 local breedRound = 0
 local emptySlot
 local targetCrop
@@ -142,6 +143,7 @@ local function main()
 
     -- First Run
     spreadOnce(true)
+    storage.analyzeStorage(true)
     action.restockAll()
 
     -- Loop

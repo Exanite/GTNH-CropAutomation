@@ -28,6 +28,11 @@ local function resetStorage()
     storage = {}
 end
 
+local function updateStorage(slot, crop)
+    storage[slot] = crop
+    reverseStorage[crop.name] = slot
+end
+
 
 local function addToStorage(crop)
     storage[#storage+1] = crop
@@ -52,6 +57,7 @@ end
 return {
     getFarm = getFarm,
     updateFarm = updateFarm,
+    updateStorage = updateStorage,
     getStorage = getStorage,
     resetStorage = resetStorage,
     addToStorage = addToStorage,
