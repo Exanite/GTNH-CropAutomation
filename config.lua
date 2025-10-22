@@ -9,9 +9,9 @@ local config = {
     -- Once complete, remove all extra crop sticks to prevent the working farm from weeding
     cleanUp = true,
     -- Moves crops to the storage farm, otherwise dumps everything in the storage chest.
-    useStorageFarm = true,
+    useStorageFarm = false,
     -- Keep crops that are not the target crop during autoSpread and autoStat
-    keepMutations = false,
+    keepMutations = true,
     -- Stat-up crops during autoTier (Very Slow)
     statWhileTiering = false,
 
@@ -20,7 +20,7 @@ local config = {
     -- Minimum Gr + Ga - Re for the working farm during autoStat (21 + 31 - 0 = 52)
     autoStatThreshold = 52,
     -- Minimum Gr + Ga - Re for the storage farm during autoSpread (23 + 31 - 0 = 54)
-    autoSpreadThreshold = 50,
+    autoSpreadThreshold = 54,
 
     -- Maximum Growth for crops on the working farm
     workingMaxGrowth = 21,
@@ -29,7 +29,7 @@ local config = {
     -- Maximum Growth for crops on the storage farm
     storageMaxGrowth = 23,
     -- Maximum Resistance for crops on the storage farm
-    storageMaxResistance = 2,
+    storageMaxResistance = 0,
 
     -- Minimum Charge Level
     needChargeLevel = 0.2,

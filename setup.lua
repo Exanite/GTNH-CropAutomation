@@ -1,33 +1,19 @@
 local shell = require('shell')
 local args = {...}
-local branch
-local repo
+local branch = 'main'
+local repo = 'https://raw.githubusercontent.com/Exanite/GTNH-CropAutomation/'
 local scripts = {
     'action.lua',
+    'autoSpread.lua',
+    'autoStat.lua',
+    'autoTier.lua',
+    'config.lua',
     'database.lua',
     'events.lua',
     'gps.lua',
     'scanner.lua',
-    'config.lua',
-    'autoStat.lua',
-    'autoTier.lua',
-    'autoSpread.lua',
     'uninstall.lua'
 }
-
--- BRANCH
-if #args >= 1 then
-    branch = args[1]
-else
-    branch = 'main'
-end
-
--- REPO
-if #args >= 2 then
-    repo = args[2]
-else
-    repo = 'https://raw.githubusercontent.com/DylanTaylor1/GTNH-CropAutomation/'
-end
 
 -- INSTALL
 for i=1, #scripts do

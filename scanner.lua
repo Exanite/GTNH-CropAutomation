@@ -39,20 +39,44 @@ end
 
 
 local function isWeed(crop, farm)
-    if farm == 'working' then
-        return crop.name == 'weed' or
-        crop.name == 'Grass' or
-        crop.gr > config.workingMaxGrowth or
-        crop.re > config.workingMaxResistance or
-        (crop.name == 'venomilia' and crop.gr > 7)
+    local result = false
 
-    elseif farm == 'storage' then
-        return crop.name == 'weed' or
-        crop.name == 'Grass' or
-        crop.gr > config.storageMaxGrowth or
-        crop.re > config.storageMaxResistance or
-        (crop.name == 'venomilia' and crop.gr > 7)
+    if crop.name == 'venomilia' and crop.gr > 7 then
+        result = true
+        print('is weed due to venomilia with gr > 7')
     end
+
+    if crop.name == 'weed' then
+        result = true
+    end
+
+    if crop.name == 'Grass' then
+        result = true
+    end
+
+    if farm == 'working' then
+        if crop.gr > config.workingMaxGrowth then
+            result = true
+            print('is weed due to exceeding workingMaxGrowth')
+        end
+
+        if crop.re > config.workingMaxResistance then
+            result = true
+            print('is weed due to exceeding workingMaxResistance')
+        end
+    elseif farm == 'storage' then
+        if crop.gr > config.storageMaxGrowth then
+            result = true
+            print('is weed due to exceeding storageMaxGrowth')
+        end
+
+        if crop.re > config.storageMaxResistance then
+            result = true
+            print('is weed due to exceeding storageMaxResistance')
+        end
+    end
+
+    return result
 end
 
 
